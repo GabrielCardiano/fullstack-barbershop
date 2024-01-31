@@ -3,6 +3,7 @@ import { ptBR } from "date-fns/locale";
 
 import Header from "@/app/_components/header";
 import Search from "@/app/(home)/_components/search";
+import BookingItem from "../_components/bookingItem";
 
 export default function Home() {
   return (
@@ -10,14 +11,21 @@ export default function Home() {
       <Header />
 
       <div className="px-5 pt-5">
-        <h2>Olá, <span className="text-xl font-bold">Gabriel</span></h2>
+        <h2 className="text-xl font-bold">Olá, Gabriel !</h2>
         <p className="capitalize text-sm">
           {format(new Date(), "EEEE',' dd 'de' MMMM 'de' yyyy'.'", { locale: ptBR, })}
         </p>
       </div>
 
       <div className="px-5 mt-6">
-      <Search />
+        <Search />
+      </div>
+
+      <div className="px-5 mt-6">
+        <h2 className="text-xs font-semibold uppercase text-gray-400 mb-3 ">
+          Agendamentos
+        </h2>
+        <BookingItem />
       </div>
     </div>
   );
