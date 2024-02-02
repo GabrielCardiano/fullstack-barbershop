@@ -14,6 +14,7 @@ export default async function Home() {
     <div>
       <Header />
 
+      {/* -------- APRESENTAÇÃO ----------*/}
       <div className="px-5 pt-5">
         <h2 className="text-xl font-bold">Olá, Gabriel !</h2>
         <p className="capitalize text-sm">
@@ -25,6 +26,7 @@ export default async function Home() {
         <Search />
       </div>
 
+      {/* -------- AGENDAMENTOS ----------*/}
       <div className="px-5 mt-6">
         <h2 className="text-xs font-semibold uppercase text-gray-400 mb-3 ">
           Agendamentos
@@ -32,6 +34,7 @@ export default async function Home() {
         <BookingItem />
       </div>
 
+      {/* -------- RECOMENDADOS ----------*/}
       <div className="mt-6 px-5">
         <h2 className=" text-xs mb-3 uppercase text-gray-400 font-bold">
           Recomendados
@@ -45,8 +48,24 @@ export default async function Home() {
             />
           ))}
         </div>
-
       </div>
+
+      {/* -------- POPULARES ----------*/}
+      <div className="mt-6 px-5 mb-[4.5rem]">
+        <h2 className=" text-xs mb-3 uppercase text-gray-400 font-bold">
+          Populares
+        </h2>
+
+        <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {barbershop.map(barbershop => (
+            <BarbershopItem
+              key={barbershop.id}
+              barbershop={barbershop}
+            />
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
