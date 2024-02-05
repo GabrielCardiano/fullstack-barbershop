@@ -1,15 +1,17 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
+
 import { Button } from "@/app/_components/ui/button";
 import { Barbershop } from "@prisma/client";
-import { ChevronLeftIcon, MenuIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface BarbershopNavigationProps {
   barbershop: Barbershop,
 }
 
-const BarbershopNavigation: React.FC<BarbershopNavigationProps> = ({barbershop}) => {
+const BarbershopNavigation: React.FC<BarbershopNavigationProps> = ({ barbershop }) => {
   const router = useRouter();
 
   const handleBackCLick = () => {
@@ -18,17 +20,45 @@ const BarbershopNavigation: React.FC<BarbershopNavigationProps> = ({barbershop})
 
   return (
     <>
-      <Button 
-      onClick={handleBackCLick}
-        variant="outline" 
+      {/* -------------- Image section --------------- */}
+      <Button
+        onClick={handleBackCLick}
+        variant="outline"
         size="icon"
-         className="absolute z-50 top-2 left-2">
-          <ChevronLeftIcon />
-        </Button>
+        className="absolute z-50 top-2 left-2">
+        <ChevronLeftIcon />
+      </Button>
 
-        <Button variant="outline" size="icon" className="absolute z-50 top-2 right-2">
-          <MenuIcon />
-        </Button>
+      <Button variant="outline" size="icon" className="absolute z-50 top-2 right-2">
+        <MenuIcon />
+      </Button>
+
+      <div className="relative w-full h-[250px]">
+        <Image
+          src={barbershop.imageUrl}
+          alt={barbershop.name}
+          fill
+          style={{ objectFit: 'cover' }}
+          className="opacity-85"
+        />
+      </div>
+
+      {/* -------------- Barbershop infos ---------------  */}
+      <div className="px-5 py-3 pb-6 border-b border-solid border-secondary">
+        <h1 className="text-xl font-bold">
+          {barbershop.name}
+        </h1>
+
+        <div className="flex items-center gap-1 mt-2">
+          <MapPinIcon size={18} className="text-primary fill-secondary" />
+          <p className="text-sm">{barbershop.address}</p>
+        </div>
+
+        <div className="flex items-center gap-1 mt-2">
+          <StarIcon size={18} className="text-primary" />
+          <p className="text-sm">5.0 (699 avaliações)</p>
+        </div>
+      </div>
     </>
   )
 }
