@@ -17,7 +17,7 @@ const BarbershopNavigation: React.FC<BarbershopNavigationProps> = ({ barbershop 
   const router = useRouter();
 
   const handleBackCLick = () => {
-    router.back();
+    router.replace("/")
   }
 
   return (

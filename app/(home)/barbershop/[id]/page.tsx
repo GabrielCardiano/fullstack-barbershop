@@ -4,6 +4,8 @@ import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
 
 import BarbershopInfo from "@/app/(home)/barbershop/[id]/_components/barbershopInfo";
 import ServiceItem from "@/app/(home)/barbershop/[id]/_components/serviceItem";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 interface BarbershopDetailsPageProps {
   params: {
@@ -12,6 +14,8 @@ interface BarbershopDetailsPageProps {
 }
 
 const BarbershopDetailsPage: React.FC<BarbershopDetailsPageProps> = async ({ params }) => {
+  const session = await getServerSession(authOptions);
+
   const barbershop = await db.barbershop.findUnique({
     where: { id: params.id },
     include: { services: true }
@@ -31,6 +35,7 @@ const BarbershopDetailsPage: React.FC<BarbershopDetailsPageProps> = async ({ par
           <ServiceItem
             key={service.id}
             service={service}
+            isAuthenticated={!!session?.user}
           />
         ))}
       </div>
