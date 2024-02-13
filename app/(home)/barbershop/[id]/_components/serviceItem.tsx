@@ -4,11 +4,11 @@ import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
-import { Barbershop, Service } from "@prisma/client";
+import { Barbershop, Booking, Service } from "@prisma/client";
 import { ptBR } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { generateTimeList } from "../_helpers/hours";
 import { format } from "date-fns/format";
 import { formatPrice } from "../_helpers/formatPrice";
@@ -17,6 +17,8 @@ import { setHours, setMinutes } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getAllDayBookings } from "../_actions/getAllDayBookings";
+import { time } from "console";
 
 interface ServiceItemProps {
   service: Service,
@@ -32,6 +34,19 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
   const [hour, setHour] = useState<string | undefined>();
   const [submitIsLoading, setSubmitIsLoading] = useState(false);
   const [sideMenu, setSideMenu] = useState(false);
+  const [dayBookings, setDayBookins] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    if (!date) return;
+
+    const updateAvailableHours = async () => {
+      const avaiableDayBookings = await getAllDayBookings(date);
+      setDayBookins(avaiableDayBookings);
+    };
+
+    updateAvailableHours();
+  }, [date]);
+
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -86,8 +101,27 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
   }
 
   const timeList = useMemo(() => {
-    return date ? generateTimeList(date) : [];
-  }, [date]);
+    if (!date) return [];
+
+    return generateTimeList(date).filter(time => {
+      // Formato time: "09:00"
+      // se houver reser em "dayBookings" com hora e minuto igual à time, não incluir.
+      const timeHour = Number(time.split(":")[0]);
+      const timeMin = Number(time.split(":")[1]);
+
+      const booking = dayBookings.find((booking) => {
+        const bookingHour = booking.date.getHours();
+        const bookingMin = booking.date.getMinutes();
+
+        //  Verifica se já tem algum booking com  mesma hora e minuto dos horários da lista generateTimeList;
+        return bookingHour === timeHour && bookingMin === timeMin;
+      });
+
+      if (!booking) return true;
+
+      return false
+    })
+  }, [date, dayBookings]);
 
   return (
     <Card>
