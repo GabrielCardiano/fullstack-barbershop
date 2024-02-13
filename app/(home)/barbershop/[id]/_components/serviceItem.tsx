@@ -15,6 +15,8 @@ import { formatPrice } from "../_helpers/formatPrice";
 import { SaveBooking } from "../_actions/saveBooking";
 import { setHours, setMinutes } from "date-fns";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ServiceItemProps {
   service: Service,
@@ -23,10 +25,13 @@ interface ServiceItemProps {
 }
 
 const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthenticated }) => {
+  const router = useRouter();
   const { data } = useSession();
+
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
   const [submitIsLoading, setSubmitIsLoading] = useState(false);
+  const [sideMenu, setSideMenu] = useState(false);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -61,11 +66,22 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
         userId: (data?.user as any).id,
         date: newDate,
       })
+
+      toast("Reserva agendada!", {
+        description: format(newDate, "'Para' dd 'de' MMMM 'às' HH':'mm'.'", { locale: ptBR }),
+        action: {
+          label: "Visualizar",
+          onClick: () => router.push("/bookings"),
+        },
+      });
     }
     catch (error) {
       console.log(error);
     } finally {
       setSubmitIsLoading(false);
+      setSideMenu(false);
+      setDate(undefined)
+      setHour(undefined);
     }
   }
 
@@ -88,6 +104,7 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
             />
           </div>
 
+          {/* Card de serviços */}
           <div className="flex flex-col w-full">
             <h2 className="font-bold">{service.name}</h2>
             <p className="text-sm text-gray-400">{service.description}</p>
@@ -97,7 +114,7 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
                 {formatPrice(service.price)}
               </p>
 
-              <Sheet>
+              <Sheet open={sideMenu} onOpenChange={setSideMenu}>
                 <SheetTrigger asChild>
                   <Button onClick={handleBookingClick} variant="secondary">
                     Reservar
@@ -210,7 +227,7 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
                       disabled={!date || !hour || submitIsLoading}
                     >
                       {submitIsLoading && (<Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
-                      Confirmar reserva                      
+                      Confirmar reserva
                     </Button>
                   </SheetFooter>
 
