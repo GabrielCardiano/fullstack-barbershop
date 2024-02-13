@@ -1,18 +1,32 @@
 "use client";
 
 import { Button } from "@/app/_components/ui/button";
+import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
-import { Service } from "@prisma/client";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
+import { Barbershop, Service } from "@prisma/client";
+import { ptBR } from "date-fns/locale";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { generateTimeList } from "../_helpers/hours";
+import { format } from "date-fns/format";
+import { formatPrice } from "../_helpers/formatPrice";
 
 interface ServiceItemProps {
   service: Service,
-  isAuthenticated?: boolean, 
+  barbershop: Barbershop,
+  isAuthenticated?: boolean,
 }
 
-const ServiceItem: React.FC<ServiceItemProps> = ({ service, isAuthenticated }) => {
+const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthenticated }) => {
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [hour, setHour] = useState<string | undefined>();
+
+  const handleDateClick = (date: Date | undefined) => {
+    setDate(date);
+    setHour(undefined);
+  }
 
   const handleBookingClick = () => {
     if (!isAuthenticated) {
@@ -21,6 +35,14 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, isAuthenticated }) =
 
     // TODO: abrir modal de agendamento
   }
+
+  const handleHourClick = (time: string) => {
+    setHour(time);    
+  }
+
+  const timeList = useMemo(() => {
+    return date ? generateTimeList(date) : [];
+  }, [date]);
 
   return (
     <Card>
@@ -43,12 +65,122 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, isAuthenticated }) =
 
             <div className="flex items-center justify-between mt-3">
               <p className="text-sm text-primary font-bold">
-                {Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(Number(service.price))}
+                {formatPrice(service.price)}
               </p>
-              <Button variant="secondary" className="text-primary">Reservar</Button>
+
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button onClick={handleBookingClick} variant="secondary">
+                    Reservar
+                  </Button>
+                </SheetTrigger>
+
+                <SheetContent className="p-0">
+                  <SheetHeader className="text-left px-5 py-6 border-solid border-secondary border-b">
+                    <SheetTitle>Fazer reserva</SheetTitle>
+                  </SheetHeader>
+
+                  {/* Calendários de agendamento */}
+                  <div className="py-6">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleDateClick}
+                      locale={ptBR}
+                      fromDate={new Date()}
+                      styles={{
+                        head_cell: { width: "100%", textTransform: "capitalize" },
+                        cell: { width: "100%" },
+                        button: { width: "100%" },
+                        nav_button_previous: { width: "32px", height: "32px" },
+                        nav_button_next: { width: "32px", height: "32px" },
+                        caption: { textTransform: "capitalize" }
+                      }}
+                    />
+                  </div>
+
+
+                  {/* Horários disponíveis para agendamento */}
+                  {date && (
+                    <div className="
+                      px-5 
+                      py-6 
+                      border-y
+                      border-solid 
+                      border-secondary
+                      flex
+                      gap-3
+                      overflow-x-auto
+                      [&::-webkit-scrollbar]:hidden
+                      ">
+                      {timeList.map((time) => (
+                        <Button
+                          key={time}
+                          onClick={() => handleHourClick(time)}
+                          variant={hour === time ? "default" : "outline"}
+                          className="rounded-full"
+                        >
+                          {time}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Infos do agendamento */}
+                  <div className="py-6 px-4 border-solid border-secondary">
+                    <Card>
+                      <CardContent className="p-3 flex flex-col gap-3">
+                        <div className="flex justify-between">
+                          <h2 className="font-bold">
+                            {service.name}
+                          </h2>
+                          <h3 className="font-bold text-sm">
+                            {formatPrice(service.price)}
+                          </h3>
+                        </div>
+
+                        {date && (
+                          <div className="flex justify-between">
+                            <h3 className="text-gray-400 text-sm">
+                              Data
+                            </h3>
+                            <h4 className="text-sm">
+                              {format(date, "dd 'de' MMMM", { locale: ptBR })}
+                            </h4>
+                          </div>
+                        )}
+
+                        {hour && (
+                          <div className="flex justify-between">
+                            <h3 className="text-gray-400 text-sm">
+                              Horário
+                            </h3>
+                            <h4 className="text-sm">
+                              {hour}
+                            </h4>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between">
+                          <h3 className="text-gray-400 text-sm">
+                            Barbearia
+                          </h3>
+                          <h4 className="text-sm">
+                            {barbershop.name}
+                          </h4>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <SheetFooter className="px-5">
+                    <Button disabled={!date || !hour}>
+                      Confirmar reserva
+                    </Button>
+                  </SheetFooter>
+
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>

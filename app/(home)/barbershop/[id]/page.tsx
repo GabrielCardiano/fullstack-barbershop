@@ -36,6 +36,7 @@ const BarbershopDetailsPage: React.FC<BarbershopDetailsPageProps> = async ({ par
             key={service.id}
             service={service}
             isAuthenticated={!!session?.user}
+            barbershop={barbershop}
           />
         ))}
       </div>
