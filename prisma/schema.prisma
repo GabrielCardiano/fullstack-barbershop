@@ -50,7 +50,7 @@ model Booking {
   userId       String
   barbershopId String
   serviceId    String
-  Date         DateTime
+  date         DateTime
 
   user       User       @relation(fields: [userId], references: [id])
   barbershop Barbershop @relation(fields: [barbershopId], references: [id])

@@ -37,7 +37,7 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
   }
 
   const handleHourClick = (time: string) => {
-    setHour(time);    
+    setHour(time);
   }
 
   const timeList = useMemo(() => {
@@ -75,6 +75,7 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
                   </Button>
                 </SheetTrigger>
 
+                {/* Menu lateral */}
                 <SheetContent className="p-0">
                   <SheetHeader className="text-left px-5 py-6 border-solid border-secondary border-b">
                     <SheetTitle>Fazer reserva</SheetTitle>
@@ -173,6 +174,7 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
                     </Card>
                   </div>
 
+                  {/* Botão de confirmação de reserva */}
                   <SheetFooter className="px-5">
                     <Button disabled={!date || !hour}>
                       Confirmar reserva
