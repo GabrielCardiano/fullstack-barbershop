@@ -18,7 +18,6 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getAllDayBookings } from "../_actions/getAllDayBookings";
-import { time } from "console";
 
 interface ServiceItemProps {
   service: Service,
@@ -40,12 +39,12 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, barbershop, isAuthen
     if (!date) return;
 
     const updateAvailableHours = async () => {
-      const avaiableDayBookings = await getAllDayBookings(date);
+      const avaiableDayBookings = await getAllDayBookings(barbershop.id, date);
       setDayBookins(avaiableDayBookings);
     };
 
     updateAvailableHours();
-  }, [date]);
+  }, [date, barbershop.id]);
 
 
   const handleDateClick = (date: Date | undefined) => {
