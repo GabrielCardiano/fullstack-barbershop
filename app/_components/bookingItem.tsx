@@ -18,7 +18,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
   const isBookingFinished = isPast(booking.date);
 
   return (
-    <Card>
+    <Card className="min-w-full">
       <CardContent className="px-0 py-0 flex">
 
         <div className="flex flex-col gap-2 py-5 flex-[3] pl-5">

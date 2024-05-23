@@ -14,16 +14,35 @@ const BookingsPage = async () => {
     return redirect("/");
   }
 
-  const bookings = await db.booking.findMany({
-    where: { userId: (session.user as any).id },
-    include: {
-      services: true,
-      barbershop: true,
-    }
-  });
+  //* Faz a filtragem direto na query da requisição ao banco de dados e roda em paralelo 
+  const [confirmedBookings, finishedBookings] = await Promise.all([
+    db.booking.findMany({
+      where: {
+        userId: (session.user as any).id,
+        date: { gte: new Date() },
+      },
+      include: {
+        services: true,
+        barbershop: true,
+      }
+    }),
 
-  const confirmedBookings = bookings.filter((booking) => isFuture(booking.date));
-  const finishedBookings = bookings.filter((booking) => isPast(booking.date));
+    db.booking.findMany({
+      where: {
+        userId: (session.user as any).id,
+        date: { lte: new Date() },
+      },
+      include: {
+        services: true,
+        barbershop: true,
+      }
+    })
+  ])
+
+
+  //* Filtra agendamentos com lógica javascript 
+  // const confirmedBookings = bookings.filter((booking) => isFuture(booking.date));
+  // const finishedBookings = bookings.filter((booking) => isPast(booking.date));
 
   return (
     <>
