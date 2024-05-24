@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { db } from "../_lib/prisma";
 
 export const cancelBooking = async (bookingId: string) => {
@@ -7,5 +8,7 @@ export const cancelBooking = async (bookingId: string) => {
     where: { id: bookingId }
   });
   
+  revalidatePath("/");
+  revalidatePath("/bookings");
 };
 

@@ -48,6 +48,7 @@ const BookingsPage = async () => {
     <>
       <Header />
 
+      {/* Agendamentos */}
       <div className="px-5 py-6">
         <h1 className="text-xl font-bold">Agendamentos</h1>
 
