@@ -5,7 +5,7 @@ import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
 import BarbershopInfo from "@/app/(home)/barbershop/[id]/_components/barbershopInfo";
 import ServiceItem from "@/app/(home)/barbershop/[id]/_components/serviceItem";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/_lib/auth";
 
 interface BarbershopDetailsPageProps {
   params: {
