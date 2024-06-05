@@ -8,6 +8,11 @@ export function generateTimeList(date: Date): string[] {
   const timeList: string[] = [];
 
   let currentTime = startTime;
+  const hourNow = new Date();
+
+  if (startTime <= hourNow) {
+    currentTime = new Date();   
+  }
 
   while (currentTime <= endTime) {
     timeList.push(format(currentTime, "HH:mm"));
